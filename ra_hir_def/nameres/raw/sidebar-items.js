@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["ImportData",""],["ImportId",""],["ImportSourceMap",""],["RawItems","`RawItems` is a set of top-level items in a file (except for impls)."]]});
