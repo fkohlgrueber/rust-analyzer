@@ -357,6 +357,9 @@ fn generate_syntax_kinds(grammar: KindsSrc<'_>) -> String {
     let punctuation =
         grammar.punct.iter().map(|(_token, name)| format_ident!("{}", name)).collect::<Vec<_>>();
 
+    let punctuation_strs =
+        grammar.punct.iter().map(|(token, _name)| token).collect::<Vec<_>>();
+
     let x = |&name| match name {
         "Self" => format_ident!("SELF_TYPE_KW"),
         name => format_ident!("{}_KW", to_upper_snake_case(name)),
@@ -429,6 +432,13 @@ fn generate_syntax_kinds(grammar: KindsSrc<'_>) -> String {
                 }
             }
 
+            pub fn is_token(self) -> bool {
+                match self {
+                    #(#tokens)|* => true,
+                    _ => false,
+                }
+            }
+
             pub fn from_keyword(ident: &str) -> Option<SyntaxKind> {
                 let kw = match ident {
                     #(#full_keywords_values => #full_keywords,)*
@@ -451,6 +461,15 @@ fn generate_syntax_kinds(grammar: KindsSrc<'_>) -> String {
                     _ => return None,
                 };
                 Some(tok)
+            }
+
+            pub fn as_str(&self) -> Option<&'static str> {
+                let s = match self {
+                    #(#punctuation => #punctuation_strs,)*
+                    #(#all_keywords => #all_keywords_values,)*
+                    _ => return None,
+                };
+                Some(s)
             }
         }
 
